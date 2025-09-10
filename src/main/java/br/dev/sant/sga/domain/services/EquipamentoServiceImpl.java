@@ -23,8 +23,8 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
 	@Autowired
 	EquipamentoRepository equipamentoRepository;
-	
-	@Autowired 
+
+	@Autowired
 	ColaboradorRepository colaboradorRepository;
 
 	@Override
@@ -38,6 +38,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 		equipamento.setModelo(dto.getModelo());
 		equipamento.setServiceTag(dto.getServiceTag());
 		equipamento.setHostname(dto.getHostname());
+		equipamento.setDataFimGarantia(dto.getDataFimGarantia());
 		equipamento.setIp(dto.getIp());
 		equipamento.setObservacoes(dto.getObservacoes());
 
@@ -50,7 +51,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 	public EquipamentoResponseDto update(Long id, EquipamentoRequestDto dto) {
 
 		var equipamento = equipamentoRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Equipamento nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Equipamento nao encontrado"));
 
 		equipamento.setTipoEquipamento(TipoEquipamento.valueOf(dto.getTipoEquipamento().toUpperCase()));
 		equipamento.setStatusEquipamento(StatusEquipamento.fromString(dto.getStatusEquipamento()));
@@ -58,6 +59,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 		equipamento.setModelo(dto.getModelo());
 		equipamento.setServiceTag(dto.getServiceTag());
 		equipamento.setHostname(dto.getHostname());
+		equipamento.setDataFimGarantia(dto.getDataFimGarantia());
 		equipamento.setIp(dto.getIp());
 		equipamento.setObservacoes(dto.getObservacoes());
 
@@ -69,17 +71,17 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 	@Override
 	public EquipamentoResponseDto getById(Long id) {
 		var equipamento = equipamentoRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Equipamento nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Equipamento nao encontrado"));
 
 		return mapToDto(equipamento);
 	}
 
 	@Override
 	public void delete(Long id) {
-		
+
 		var equipamento = equipamentoRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Equipamento nao encontrado"));
-		
+				.orElseThrow(() -> new IllegalArgumentException("Equipamento nao encontrado"));
+
 		equipamentoRepository.delete(equipamento);
 	}
 
@@ -89,55 +91,56 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 		var equipamento = equipamentoRepository.findByServiceTag(serviceTag);
 
 		if (equipamento == null) {
-			throw new RuntimeException("Equipamento nao encontrado");
+			throw new IllegalArgumentException("Equipamento nao encontrado");
 		}
-		
+
 		return mapToDto(equipamento);
 
 	}
 
 	@Override
 	public List<EquipamentoResponseDto> getAll() {
-		
+
 		var equipamentos = equipamentoRepository.findAll();
 		return equipamentos.stream().map((equipamento) -> mapToDto(equipamento)).collect(Collectors.toList());
-		
+
 	}
 
 	@Override
 	public EquipamentoResponseDto assignToColaborador(Long equipamentoId, Long colaboradorId) {
-		
-	    var equipamento = equipamentoRepository.findById(equipamentoId)
-	            .orElseThrow(() -> new RuntimeException("Equipamento com ID " + equipamentoId + " não encontrado."));
 
-	    var colaborador = colaboradorRepository.findById(colaboradorId)
-	            .orElseThrow(() -> new RuntimeException("Colaborador com ID " + colaboradorId + " não encontrado."));
+		var equipamento = equipamentoRepository.findById(equipamentoId)
+				.orElseThrow(() -> new IllegalArgumentException("Equipamento com ID " + equipamentoId + " não encontrado."));
 
-	           
-	    if (equipamento.getColaborador() != null) {
-	        throw new RuntimeException("Operação falhou: O equipamento " + equipamento.getModelo() + " já está atribuído a outro colaborador.");
-	    }
-	    
-	    if (colaborador.getEquipamento() != null) {
-	        throw new RuntimeException("Operação falhou: O colaborador " + colaborador.getNome() + " já possui um equipamento atribuído.");
-	    }
-	    
-	    equipamento.setColaborador(colaborador);
-	    colaborador.setEquipamento(equipamento);
-	    equipamento.setStatusEquipamento(StatusEquipamento.EM_USO);
-	    
-	    equipamentoRepository.save(equipamento);
-	    colaboradorRepository.save(colaborador);
-	    
-	    return mapToDto(equipamento);
+		var colaborador = colaboradorRepository.findById(colaboradorId)
+				.orElseThrow(() -> new IllegalArgumentException("Colaborador com ID " + colaboradorId + " não encontrado."));
+
+		if (equipamento.getColaborador() != null) {
+			throw new IllegalArgumentException("Operação falhou: O equipamento " + equipamento.getModelo()
+					+ " já está atribuído a outro colaborador.");
+		}
+
+		if (colaborador.getEquipamento() != null) {
+			throw new IllegalArgumentException(
+					"Operação falhou: O colaborador " + colaborador.getNome() + " já possui um equipamento atribuído.");
+		}
+
+		equipamento.setColaborador(colaborador);
+		colaborador.setEquipamento(equipamento);
+		equipamento.setStatusEquipamento(StatusEquipamento.EM_USO);
+
+		equipamentoRepository.save(equipamento);
+		colaboradorRepository.save(colaborador);
+
+		return mapToDto(equipamento);
 	}
 
 	@Override
 	public EquipamentoResponseDto unassignFromColaborador(Long equipamentoId) {
-		
+
 		var equipamento = equipamentoRepository.findById(equipamentoId)
-				.orElseThrow(() -> new RuntimeException("Equipamento com ID " + equipamentoId + " não encontrado."));
-		
+				.orElseThrow(() -> new IllegalArgumentException("Equipamento com ID " + equipamentoId + " não encontrado."));
+
 		if (equipamento.getColaborador() != null) {
 			var colaborador = equipamento.getColaborador();
 			equipamento.setColaborador(null);
@@ -145,9 +148,8 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 			equipamento.setStatusEquipamento(StatusEquipamento.DISPONIVEL);
 			equipamentoRepository.save(equipamento);
 			colaboradorRepository.save(colaborador);
-		}
-		else {
-			throw new RuntimeException("Operação falhou: O equipamento " + equipamento.getModelo()
+		} else {
+			throw new IllegalArgumentException("Operação falhou: O equipamento " + equipamento.getModelo()
 					+ " não está atribuído a nenhum colaborador.");
 		}
 
@@ -163,22 +165,21 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 		response.setMarca(equipamento.getMarca());
 		response.setModelo(equipamento.getModelo());
 		response.setServiceTag(equipamento.getServiceTag());
+		response.setDataFimGarantia(equipamento.getDataFimGarantia().toString());
 		response.setHostname(equipamento.getHostname());
 		response.setIp(equipamento.getIp());
+		response.setObservacoes(equipamento.getObservacoes());
 
-		  if (equipamento.getColaborador() != null) {
-		        var colaboradorEntity = equipamento.getColaborador();
-		        
-		        var colaboradorDto = new ColaboradorResumidoDto(
-		            colaboradorEntity.getId(),
-		            colaboradorEntity.getNome(),
-		            colaboradorEntity.getEmail()
-		        );
-		        response.setColaborador(colaboradorDto);
-		    } else {
-		        response.setColaborador(null);
-		    }
-		
+		if (equipamento.getColaborador() != null) {
+			var colaboradorEntity = equipamento.getColaborador();
+
+			var colaboradorDto = new ColaboradorResumidoDto(colaboradorEntity.getId(), colaboradorEntity.getNome(),
+					colaboradorEntity.getEmail());
+			response.setColaborador(colaboradorDto);
+		} else {
+			response.setColaborador(null);
+		}
+
 		return response;
 	}
 

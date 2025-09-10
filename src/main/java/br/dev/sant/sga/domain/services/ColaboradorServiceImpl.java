@@ -31,7 +31,7 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 	public ColaboradorResponseDto criarColaborador(ColaboradorRequestDto request) {
 
 		if (colaboradorRepository.existsByName(request.getNome())) {
-			throw new RuntimeException("Colaborador ja cadastrado");
+			throw new IllegalArgumentException("Colaborador ja cadastrado");
 		}
 
 		var colaborador = new Colaborador();
@@ -51,7 +51,7 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 	public ColaboradorResponseDto atualizarColaborador(ColaboradorRequestDto request, Long id) {
 
 		var colaborador = colaboradorRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Colaborador nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Colaborador nao encontrado"));
 
 		colaborador.setNome(request.getNome());
 		colaborador.setEmail(request.getEmail());
@@ -68,7 +68,7 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 	public ColaboradorResponseDto inativarColaborador(Long id) {
 
 		var colaborador = colaboradorRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Colaborador nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Colaborador nao encontrado"));
 
 		colaborador.setSituacao(Colaborador.Situacao.INATIVO);
 
@@ -81,10 +81,10 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 	public ColaboradorResponseDto deletarColaborador(Long id) {
 
 		var colaborador = colaboradorRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Colaborador nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Colaborador nao encontrado"));
 
 	    if (colaborador.getEquipamento() != null) {
-	        throw new RuntimeException("Não é possível deletar um colaborador que possui um equipamento associado. Por favor, desvincule o equipamento primeiro.");
+	        throw new IllegalArgumentException("Não é possível deletar um colaborador que possui um equipamento associado. Por favor, desvincule o equipamento primeiro.");
 	    }
 		
 		colaboradorRepository.delete(colaborador);
@@ -96,7 +96,7 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 	public ColaboradorResponseDto buscarColaboradorPorId(Long id) {
 
 		var colaborador = colaboradorRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Colaborador nao encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Colaborador nao encontrado"));
 
 		return mapToDto(colaborador);
 	}

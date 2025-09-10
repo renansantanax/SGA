@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.dev.sant.sga.domain.interfaces.ColaboradorService;
 import br.dev.sant.sga.infrastructure.dtos.ColaboradorRequestDto;
 import br.dev.sant.sga.infrastructure.dtos.ColaboradorResponseDto;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/colaboradores")
@@ -29,14 +30,14 @@ public class ColaboradorController {
 	}
 
 	@PostMapping("criar")
-	public ResponseEntity<ColaboradorResponseDto> criarColaborador(ColaboradorRequestDto request) {
+	public ResponseEntity<ColaboradorResponseDto> criarColaborador(@Valid ColaboradorRequestDto request) {
 		var response = colaboradorService.criarColaborador(request);
 		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping("atualizar/{idColaborador}")
 	public ResponseEntity<ColaboradorResponseDto> atualizarColaborador(@PathVariable Long idColaborador,
-			ColaboradorRequestDto request) {
+			@Valid ColaboradorRequestDto request) {
 
 		var response = colaboradorService.atualizarColaborador(request, idColaborador);
 
