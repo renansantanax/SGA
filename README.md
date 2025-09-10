@@ -1,0 +1,3 @@
+Estou codando ainda...
+
+É básicamente um sistema de ativos/inventário :D
