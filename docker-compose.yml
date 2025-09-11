@@ -30,8 +30,20 @@ services:
     networks:
       - sga-network
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3001:3001"  
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks:
+      - sga-network
+
 volumes:
   postgres_data:
+  uptime-kuma-data:
 
 networks:
   sga-network:
