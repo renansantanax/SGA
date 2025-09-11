@@ -1,7 +1,6 @@
 package br.dev.sant.sga.domain.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -19,6 +18,7 @@ import com.github.javafaker.Faker;
 
 import br.dev.sant.sga.domain.entities.Colaborador;
 import br.dev.sant.sga.domain.entities.Colaborador.Situacao;
+import br.dev.sant.sga.domain.entities.Equipamento;
 import br.dev.sant.sga.infrastructure.dtos.ColaboradorRequestDto;
 import br.dev.sant.sga.infrastructure.dtos.ColaboradorResponseDto;
 import br.dev.sant.sga.infrastructure.repositories.ColaboradorRepository;
@@ -131,6 +131,7 @@ public class ColaboradorServiceImplTest {
 
 		assertThat(exception.getMessage()).isEqualTo("Colaborador nao encontrado");
 
+		verify(colaboradorRepository, times(1)).findById(colaboradorId);
 		verify(colaboradorRepository, never()).save(any(Colaborador.class));
 	}
 
@@ -147,41 +148,95 @@ public class ColaboradorServiceImplTest {
 		colaboradorExistente.setSituacao(Situacao.ATIVO);
 
 		when(colaboradorRepository.findById(colaboradorId)).thenReturn(java.util.Optional.of(colaboradorExistente));
-		
-	    colaboradorService.deletarColaborador(colaboradorId);
 
-	    verify(colaboradorRepository, times(1)).findById(colaboradorId);
-	    verify(colaboradorRepository, times(1)).delete(colaboradorExistente);
+		colaboradorService.deletarColaborador(colaboradorId);
+
+		verify(colaboradorRepository, times(1)).findById(colaboradorId);
+		verify(colaboradorRepository, times(1)).delete(colaboradorExistente);
 	}
 
 	@Test
 	void deveLancarErroAoTentarDeletarColaboradorInexistente() {
-		
+
 		Long colaboradorId = 99L;
-		
+
 		when(colaboradorRepository.findById(colaboradorId)).thenReturn(java.util.Optional.empty());
-		
+
 		var exception = assertThrows(IllegalArgumentException.class,
 				() -> colaboradorService.deletarColaborador(colaboradorId));
 
 		assertThat(exception.getMessage()).isEqualTo("Colaborador nao encontrado");
-		
+
 		verify(colaboradorRepository, never()).delete(any(Colaborador.class));
-		
+
 	}
 
 	@Test
 	void deveLancarErroAoTentarDeletarColaboradorComEquipamentoAssociado() {
-		fail("TESTE NÃO IMPLEMENTADO");
+
+		var faker = new Faker();
+
+		Long colaboradorId = 99L;
+
+		var colaborador = new Colaborador();
+		colaborador.setNome(faker.name().fullName());
+		colaborador.setEmail(faker.internet().emailAddress());
+		colaborador.setSetor(faker.commerce().department());
+		colaborador.setSituacao(Situacao.ATIVO);
+		colaborador.setEquipamento(new Equipamento());
+
+		when(colaboradorRepository.findById(colaboradorId)).thenReturn(java.util.Optional.of(colaborador));
+
+		var exception = assertThrows(IllegalArgumentException.class,
+				() -> colaboradorService.deletarColaborador(colaboradorId));
+
+		assertThat(exception.getMessage()).isEqualTo(
+				"Não é possível deletar um colaborador que possui um equipamento associado. Por favor, desvincule o equipamento primeiro.");
+
+		verify(colaboradorRepository, never()).delete(any(Colaborador.class));
 	}
 
 	@Test
 	void deveRetornarColaboradorQuandoIdExistir() {
-		fail("TESTE NÃO IMPLEMENTADO");
+
+		var faker = new Faker();
+
+		Long colaboradorId = 99L;
+
+		var colaborador = new Colaborador();
+		colaborador.setId(colaboradorId);
+		colaborador.setNome(faker.name().fullName());
+		colaborador.setEmail(faker.internet().emailAddress());
+		colaborador.setSetor(faker.commerce().department());
+		colaborador.setSituacao(Situacao.ATIVO);
+
+		when(colaboradorRepository.findById(colaboradorId)).thenReturn(java.util.Optional.of(colaborador));
+
+		var response = colaboradorService.buscarColaboradorPorId(colaboradorId);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getId()).isEqualTo(colaboradorId);
+		assertThat(response.getNome()).isEqualTo(colaborador.getNome());
+		assertThat(response.getEmail()).isEqualTo(colaborador.getEmail());
+		assertThat(response.getSetor()).isEqualTo(colaborador.getSetor());
+		assertThat(response.getSituacao()).isEqualTo("ATIVO");
+
+		verify(colaboradorRepository, times(1)).findById(colaboradorId);
 	}
 
 	@Test
 	void deveLancarErroQuandoTentarRetornarColaboradorInexistente() {
-		fail("TESTE NÃO IMPLEMENTADO");
+
+		Long colaboradorId = 100L;
+		
+		when(colaboradorRepository.findById(colaboradorId)).thenReturn(java.util.Optional.empty());
+		
+		var exception = assertThrows(IllegalArgumentException.class, 
+				() -> colaboradorService.buscarColaboradorPorId(colaboradorId));
+		
+		assertThat(exception.getMessage()).isEqualTo("Colaborador nao encontrado");
+		
+	    verify(colaboradorRepository, times(1)).findById(colaboradorId);
+		
 	}
 }
