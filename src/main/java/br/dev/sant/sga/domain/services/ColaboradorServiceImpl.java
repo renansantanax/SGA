@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.dev.sant.sga.domain.entities.Colaborador;
 import br.dev.sant.sga.domain.interfaces.ColaboradorService;
@@ -14,6 +15,7 @@ import br.dev.sant.sga.infrastructure.dtos.EquipamentoResumidoDto;
 import br.dev.sant.sga.infrastructure.repositories.ColaboradorRepository;
 
 @Service
+@Transactional
 public class ColaboradorServiceImpl implements ColaboradorService {
 
 	@Autowired

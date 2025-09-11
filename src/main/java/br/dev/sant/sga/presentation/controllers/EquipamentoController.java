@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,7 @@ import br.dev.sant.sga.domain.interfaces.ColaboradorService;
 import br.dev.sant.sga.domain.interfaces.EquipamentoService;
 import br.dev.sant.sga.infrastructure.dtos.EquipamentoRequestDto;
 import br.dev.sant.sga.infrastructure.dtos.EquipamentoResponseDto;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/equipamentos")
@@ -26,7 +29,7 @@ public class EquipamentoController {
 	ColaboradorService colaboradorService;
 
 	@PostMapping("criar")
-	public ResponseEntity<EquipamentoResponseDto> create(EquipamentoRequestDto dto) {
+	public ResponseEntity<EquipamentoResponseDto> create(@Valid @RequestBody EquipamentoRequestDto dto) {
 
 		var response = equipamentoService.create(dto);
 
@@ -35,7 +38,7 @@ public class EquipamentoController {
 	}
 	
 	@PutMapping("atualizar/{id}")
-	public ResponseEntity<EquipamentoResponseDto> update(Long id, EquipamentoRequestDto dto) {
+	public ResponseEntity<EquipamentoResponseDto> update(@PathVariable Long id, @Valid @RequestBody EquipamentoRequestDto dto) {
 
 		var response = equipamentoService.update(id, dto);
 
@@ -44,7 +47,7 @@ public class EquipamentoController {
 	}
 
 	@DeleteMapping("deletar/{id}")
-	public ResponseEntity<String> delete(Long id) {
+	public ResponseEntity<String> delete(@PathVariable Long id) {
 
 		equipamentoService.delete(id);
 
@@ -72,7 +75,7 @@ public class EquipamentoController {
 	}
 
 	@PutMapping("atribuir/{equipamentoId}/colaborador/{colaboradorId}")
-	public ResponseEntity<EquipamentoResponseDto> assignToColaborador(Long equipamentoId, Long colaboradorId) {
+	public ResponseEntity<EquipamentoResponseDto> assignToColaborador(@PathVariable Long equipamentoId, @PathVariable Long colaboradorId) {
 
 		var response = equipamentoService.assignToColaborador(equipamentoId, colaboradorId);
 
@@ -81,7 +84,7 @@ public class EquipamentoController {
 	}
 
 	@PutMapping("desatribuir/{equipamentoId}")
-	public ResponseEntity<EquipamentoResponseDto> unassignFromColaborador(Long equipamentoId) {
+	public ResponseEntity<EquipamentoResponseDto> unassignFromColaborador(@PathVariable Long equipamentoId) {
 
 		var response = equipamentoService.unassignFromColaborador(equipamentoId);
 
@@ -89,7 +92,8 @@ public class EquipamentoController {
 
 	}
 
-	public ResponseEntity<EquipamentoResponseDto> getByServiceTag(String serviceTag) {
+	@GetMapping("buscar/serviceTag/{serviceTag}")
+	public ResponseEntity<EquipamentoResponseDto> getByServiceTag(@PathVariable String serviceTag) {
 
 		var response = equipamentoService.getByServiceTag(serviceTag);
 

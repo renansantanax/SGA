@@ -165,7 +165,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 		response.setMarca(equipamento.getMarca());
 		response.setModelo(equipamento.getModelo());
 		response.setServiceTag(equipamento.getServiceTag());
-		response.setDataFimGarantia(equipamento.getDataFimGarantia().toString());
+		response.setDataFimGarantia(equipamento.getDataFimGarantia());
 		response.setHostname(equipamento.getHostname());
 		response.setIp(equipamento.getIp());
 		response.setObservacoes(equipamento.getObservacoes());

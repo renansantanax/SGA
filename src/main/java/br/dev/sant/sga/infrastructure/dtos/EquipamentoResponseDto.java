@@ -1,5 +1,7 @@
 package br.dev.sant.sga.infrastructure.dtos;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 
 @Data
@@ -12,7 +14,7 @@ public class EquipamentoResponseDto {
 	private String serviceTag;
 	private String hostname;
 	private String ip;
-	private String dataFimGarantia; // Formato: "yyyy-MM-dd"
+	private LocalDate dataFimGarantia; // Formato: "yyyy-MM-dd"
 	private String observacoes;
 	private ColaboradorResumidoDto colaborador;
 }
