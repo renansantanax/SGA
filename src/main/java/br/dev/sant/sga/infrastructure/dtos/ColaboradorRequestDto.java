@@ -15,7 +15,7 @@ public class ColaboradorRequestDto {
 
 	@Size(min = 5, max = 120, message = "Por favor, verifique o tamanho do email (min: 5, max: 120).")
 	@NotBlank(message = "Por favor, informe o email do colaborador.")
-	@Email(message = "Por favor, informe um email válido.")
+	@Email(regexp = ".+@.+\\..+", message = "Por favor, informe um email válido.")
 	private String email;
 	
 	@Size(max = 60, message = "Por favor, verifique o tamanho do setor (max: 60).")

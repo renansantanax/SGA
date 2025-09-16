@@ -18,7 +18,7 @@ import br.dev.sant.sga.infrastructure.dtos.ColaboradorResponseDto;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/colaboradores")
+@RequestMapping("/api/colaboradores")
 public class ColaboradorController {
 
 	@Autowired

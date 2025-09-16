@@ -20,7 +20,7 @@ import br.dev.sant.sga.infrastructure.dtos.EquipamentoResponseDto;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/equipamentos")
+@RequestMapping("/api/equipamentos")
 public class EquipamentoController {
 
 	@Autowired

@@ -28,7 +28,6 @@ public class EquipamentoRequestDto {
 	@Size(max = 100, message = "O service tag deve ter no máximo 100 caracteres.")
 	private String serviceTag;
 	
-	@Size(max = 10, message = "A data de fim de garantia deve estar no formato 'yyyy-MM-dd'.")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dataFimGarantia;
 	

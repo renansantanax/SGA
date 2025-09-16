@@ -35,9 +35,28 @@ services:
     container_name: uptime-kuma
     restart: always
     ports:
-      - "3001:3001"  
+      - "3001:3001"
     volumes:
       - uptime-kuma-data:/app/data
+    networks:
+      - sga-network
+
+  sga:
+    build: .
+    container_name: sga-app
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sga
+      SPRING_DATASOURCE_USERNAME: sga_user
+      SPRING_DATASOURCE_PASSWORD: sga_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SERVER_PORT: 8086
+    ports:
+      - "8086:8086"
     networks:
       - sga-network
 
