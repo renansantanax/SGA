@@ -57,7 +57,7 @@ public class EquipamentoController {
 
 	
 	@GetMapping("buscar/{id}")
-	public ResponseEntity<EquipamentoResponseDto> getById(Long id) {
+	public ResponseEntity<EquipamentoResponseDto> getById(@PathVariable Long id) {
 
 		var response = equipamentoService.getById(id);
 

@@ -13,7 +13,5 @@ public interface ColaboradorRepository extends JpaRepository<Colaborador, Long> 
 			FROM Colaborador c WHERE c.nome = :nome
 			""")
 	boolean existsByName(@Param("nome") String nome);
-
-	
 	
 }
